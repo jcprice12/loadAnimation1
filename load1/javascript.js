@@ -1,32 +1,37 @@
-var elementsToAnimate = [document.getElementById("circle1"), document.getElementById("circle2"), document.getElementById("circle3"), document.getElementById("circle4")];
-var counter = 0;
+function MyLoadAnimation1(myElementsToAnimate,myLoadContainer){
+	this.counter = 0;
+	this.elementsToAnimate = myElementsToAnimate;
+	this.loadContainer = myLoadContainer;
+}
 
 //convert degrees to radians
-function getRadians(degree){
+MyLoadAnimation1.prototype.getRadians = function(degree){
 	var radian = degree *(Math.PI / 180);
 	return radian;
 }
 
 //get the appropriate x coordinate based on value of cos(degree)
-function getXCoord(radius, halfOfElementWidth, degree){
-	var xCoord = (radius + ((radius - halfOfElementWidth) * Math.cos(getRadians(degree)))) - halfOfElementWidth;
+MyLoadAnimation1.prototype.getXCoord = function(radius, halfOfElementWidth, degree){
+	var xCoord = (radius + ((radius - halfOfElementWidth) * Math.cos(this.getRadians(degree)))) - halfOfElementWidth;
 	return xCoord;
 }
 
 //get the appropriate y coordinate based on value of sin(degree)
-function getYCoord(radius, halfOfElementHeight, degree){
-	var yCoord = (radius + ((radius - halfOfElementHeight) * Math.sin(getRadians(degree)))) - halfOfElementHeight;
+MyLoadAnimation1.prototype.getYCoord = function(radius, halfOfElementHeight, degree){
+	var yCoord = (radius + ((radius - halfOfElementHeight) * Math.sin(this.getRadians(degree)))) - halfOfElementHeight;
 	return yCoord;
 }
 
 //main animate function
-function animate(elementToAnimate, elementToAnimateWidth, elementToAnimateHeight, radiusOfContainer, degree, acceleration, moveSpeed){
+MyLoadAnimation1.prototype.animate = function(elementToAnimate, elementToAnimateWidth, elementToAnimateHeight, radiusOfContainer, degree, acceleration, moveSpeed){
+
+	var mySelf = this;
 
 	$(elementToAnimate).show();//just in case
 
 	//redraw the element
-	elementToAnimate.style.left = getXCoord(radiusOfContainer, (elementToAnimateWidth/2), degree) + "px";
-	elementToAnimate.style.top = getYCoord(radiusOfContainer, (elementToAnimateHeight/2), degree) + "px";
+	elementToAnimate.style.left = this.getXCoord(radiusOfContainer, (elementToAnimateWidth/2), degree) + "px";
+	elementToAnimate.style.top = this.getYCoord(radiusOfContainer, (elementToAnimateHeight/2), degree) + "px";
 	
 	//update speed
 	moveSpeed = moveSpeed + acceleration;
@@ -39,11 +44,11 @@ function animate(elementToAnimate, elementToAnimateWidth, elementToAnimateHeight
 
 	//stop if full revolution
 	if(degree >= 360){
-		counter++;
-		if(counter == (elementsToAnimate.length)){
-			counter = 0;
+		this.counter++;
+		if(this.counter == (this.elementsToAnimate.length)){
+			this.counter = 0;
 			setTimeout(function(){
-				startAnimation(0, elementsToAnimate.length);
+				mySelf.startAnimation(0, mySelf.elementsToAnimate.length);
 			},1000);
 		}
 		//prevent looping by returning
@@ -52,19 +57,25 @@ function animate(elementToAnimate, elementToAnimateWidth, elementToAnimateHeight
 
 	//loop to make "animation"
 	setTimeout(function(){
-		animate(elementToAnimate, elementToAnimateWidth, elementToAnimateHeight, radiusOfContainer, degree, acceleration, moveSpeed);
+		mySelf.animate(elementToAnimate, elementToAnimateWidth, elementToAnimateHeight, radiusOfContainer, degree, acceleration, moveSpeed);
 	}, 20);
 }
 
 //cascade elements in array
-function startAnimation(current, stop){
+MyLoadAnimation1.prototype.startAnimation = function(current, stop){
+	var mySelf = this;
 	if(current < stop){
-		animate(elementsToAnimate[current], $(elementsToAnimate[current]).width(), $(elementsToAnimate[current]).height(), ($("#loadContainer").width()/2), 0, 0.15, 3);
+		this.animate(this.elementsToAnimate[current], $(this.elementsToAnimate[current]).width(), $(this.elementsToAnimate[current]).height(), ($(this.loadContainer).width()/2), 0, 0.15, 3);
 		setTimeout(function(){
-			startAnimation((current + 1), stop);
+			mySelf.startAnimation((current + 1), stop);
 		}, 100);
 	}
 }
 
 //start everything up
-startAnimation(0, elementsToAnimate.length);
+//MyLoadAnimation1.prototype.startAnimation = function(0, elementsToAnimate.length);
+
+var elementsToAnimate = [document.getElementById("circle1"), document.getElementById("circle2"), document.getElementById("circle3"), document.getElementById("circle4")];
+var loadAnimation1 = new MyLoadAnimation1(elementsToAnimate,document.getElementById("loadContainer"));
+loadAnimation1.startAnimation(0,elementsToAnimate.length);
+
