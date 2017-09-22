@@ -56,7 +56,7 @@ MyLoadAnimation1.prototype.buildCircle = function(color){
 
 //build the html and css for the load animation to take place in
 MyLoadAnimation1.prototype.buildHTML = function(){
-	myLoadContainer = document.createElement("div");
+	var myLoadContainer = document.createElement("div");
 	$(myLoadContainer).addClass("MyLoadAnimation1-LoadContainer");
 	$(myLoadContainer).css("position", "absolute");
 	$(myLoadContainer).css("margin", "auto");
@@ -72,7 +72,7 @@ MyLoadAnimation1.prototype.buildHTML = function(){
 	$(myLoadContainer).css("-ms-transform", "rotate(270deg)");
 	$(myLoadContainer).css("transform", "rotate(270deg)");
 	var colorCounter = 0;
-	for(i = 0; i < this.numberOfCircles; i++){
+	for(var i = 0; i < this.numberOfCircles; i++){
 		if(colorCounter >= this.colors.length){
 			colorCounter = 0;
 		}
@@ -89,6 +89,12 @@ MyLoadAnimation1.prototype.buildHTML = function(){
 MyLoadAnimation1.prototype.stopAnimation = function(){
 	this.canPlay = false;
 	clearTimeout(this.myTimer);
+}
+
+//stop the animation
+MyLoadAnimation1.prototype.stopAndRemove = function(){
+	this.stopAnimation();
+	this.removeAnimation();
 }
 
 //main animate function
@@ -136,7 +142,6 @@ MyLoadAnimation1.prototype.animate = function(elementToAnimate, elementToAnimate
 
 //should be called when initially starting the animation
 MyLoadAnimation1.prototype.startAll = function(){
-	//console.log("hey");
 	this.canPlay = true;
 	$(this.parentContainer).append(this.buildHTML());
 	this.startAnimation(0,this.elementsToAnimate.length);
